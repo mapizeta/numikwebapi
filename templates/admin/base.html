@@ -1,0 +1,108 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
+{% block extrahead %}{% endblock %}
+{% block responsive %}
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}">
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
+{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+  data-admin-utc-offset="{% now "Z" %}">
+
+<!-- Container -->
+<div id="container">
+
+    {% if not is_popup %}
+    <!-- Header -->
+    <div id="header" style="background-color:#f4f6f8;">
+        <div id="branding">
+            <img class="mb-4" src="https://numik-app.web.app/images/logos/logo-numik.png">
+        
+        </div>
+        {% block usertools %}
+        {% if has_permission %}
+        <div id="user-tools" style="color: #40a5a5;">
+            {% block welcome-msg %}
+                {% trans 'Welcome,' %}
+                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+            {% endblock %}
+            {% block userlinks %}
+                
+                {% if user.is_active and user.is_staff %}
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}"><strong><font color="263238">{% trans 'Documentation' %}</font></strong></a> /
+                    {% endif %}
+                {% endif %}
+                {% if user.has_usable_password %}
+                <a href="{% url 'admin:password_change' %}"><strong><font color="263238">{% trans 'Change password' %}</font></strong></a> /
+                {% endif %}
+                <a href="{% url 'admin:logout' %}"><strong><font color="263238">{% trans 'Log out' %}</font></strong></a>
+            {% endblock %}
+        </div>
+        {% endif %}
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    <!-- END Header -->
+    {% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+    {% endblock %}
+    {% endif %}
+
+    {% block messages %}
+        {% if messages %}
+        <ul class="messagelist">{% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+        {% endfor %}</ul>
+        {% endif %}
+    {% endblock messages %}
+
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+        
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        
+        {% endblock %}
+        
+        {% block sidebar %}{% endblock %}
+        {% if has_permission %}
+            <a href="{% url 'user' %}?collection=user&attributes=name,surname" style="font-size: large;">Usuarios</a>        
+            <br><br>
+            <a href="{% url 'table' %}?collection=college&attributes=name,dominio&static=dominio" style="font-size: large;">Colegios</a>
+            <br><br>
+            <a href="{% url 'table' %}?collection=exam&attributes=prueba,owner,Asignatura" style="font-size: large;">Pruebas</a>
+            <br><br>
+            <a href="{% url 'table' %}?collection=oa&attributes=Asignatura,Nivel,Oa" style="font-size: large;">Oas</a>
+            <br><br>
+            <a href="{% url 'table' %}?collection=eje&attributes=subject,description" style="font-size: large;">Ejes</a>
+            <br><br>
+            <a href="{% url 'mql' %}" style="font-size: large;">Mql ver_0.1</a>
+        {% endif %}
+        <br class="clear">
+    </div>
+    <!-- END Content -->
+
+    {% block footer %}<div id="footer"></div>{% endblock %}
+</div>
+<!-- END Container -->
+
+</body>
+</html>

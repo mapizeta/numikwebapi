@@ -1,0 +1,1 @@
+web: gunicorn pyNumikweb.wsgi --log-file -

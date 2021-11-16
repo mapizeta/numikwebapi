@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  {# Cargamos la librería #}
+  {% load bootstrap4 %}
+  
+  {# CSS Bootstrap #}
+  {% bootstrap_css %}
+  {% load static %}
+</head>
+<body>
+
+<div class="container">
+  <h2>Classrun</h2>
+  <form method="post">
+    {% csrf_token %}    
+    <input type="hidden" name="id" value="prueba">
+    <div class="form-group">
+        <label for="exampleFormControlTextarea1">Query Firebase</label>
+        <textarea class="form-control" id="query" name="query" rows="3"></textarea>
+      </div>                
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+  <br>
+  <div id="data"></div>
+</div>
+{% bootstrap_javascript jquery='full' %}
+        
+        <script>
+            $( "form" ).on( "submit", function( event ) {
+                event.preventDefault();
+                console.log( $( this ).serialize() );
+                $.post('/process/', 
+                $( "form" ).serialize(),
+                function(data, status){
+                    //console.log(data, status);
+                    $("#data").html(data.response);
+                })
+            });
+            
+        </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  {# Cargamos la librería #}
+  {% load bootstrap4 %}
+  
+  {# CSS Bootstrap #}
+  {% bootstrap_css %}
+  {% load static %}
+</head>
+<body>
+
+<div class="container">
+  <h2>Collection</h2>
+  <form action="/sendForm" id="sender">
+
+    <input type="hidden" name="collection" value="{{collection}}">
+    <input type="hidden" id="referrer" name="referrer" value="">
+    {% for key, value in document.items %}
+        {%  if key == "id" %}
+          <input type="hidden" name="id" value="{{value}}">
+        {% else %}
+          <div class="form-group">
+              <label for="email">{{key}}:</label>
+              <input type="{{key}}" class="form-control" id="{{key}}" name="{{key}}" value="{{value}}">
+          </div>
+        {% endif %}
+    {% endfor%}     
+
+  </form>
+  <button type="submit" class="btn btn-primary" form="sender">Guardar</button>
+  <br>
+  <br>
+  <form>
+    <h2>Add Field</h2>
+    <input type="text" class="form-control" id="addField" value="">
+    <br>
+    <button id="btnAddField" type="button" class="btn btn-primary">+</button>
+  </form>
+</div>
+{% bootstrap_javascript jquery='full' %}
+        
+        <script>
+          $(document).ready(function() {
+            let referrer =  document.referrer;
+            $("#referrer").val(referrer);
+          });
+
+          $( "#sender" ).on( "submit", function( event ) {
+            //event.preventDefault();
+            console.log( $( this ).serialize() );
+            });
+          
+          $("#btnAddField").on("click", function(event){
+            let field = $("#addField").val();
+            console.log(document.referrer);
+            $( "#sender" ).append('<div class="form-group"><label for="email">'+field+':</label><input type="text" class="form-control" id="'+field+'" name="'+field+'" value=""></div>');
+          });
+
+        </script>
+</body>
+</html>
